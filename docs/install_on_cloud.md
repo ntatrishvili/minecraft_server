@@ -20,8 +20,7 @@ If you have never had an account, most of cloud provides have an option for 1-mo
 ## Creating a cloud server
 After the sign-in, you can change the name and description for the template project and start creating a droplet
 
-1. Create a droplet from upper-right corner
-![Create_droplet](..\Screenshots\Create_droplet.png)
+1. Create a droplet from upper-right corner of the screen
 2. Choose the parameters:
     1. Region: Frankfurt
     2. Image: Ubuntu, version: 22.4 (LTS) x64
