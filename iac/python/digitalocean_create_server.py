@@ -5,6 +5,10 @@ import time
 
 do_api_key = os.getenv('DO_API_KEY')
 do_base_url= "https://api.digitalocean.com/v2"
+with open("../cloudinit/cloud-init.yml") as conf:
+    do_cloud_init= conf.read()
+
+# print(do_cloud_init)
 
 # Create Server Request
 
@@ -14,6 +18,7 @@ create_server_requests = requests.post(f"{do_base_url}/droplets",headers={
   "name": "something",
   "size": "s-1vcpu-1gb",
   "image": "ubuntu-20-04-x64",
+  "user_data": do_cloud_init,
   "ssh_keys": [
     "55:79:b3:e9:e2:a4:c2:8d:0b:66:55:e5:5e:cd:e7:07"
   ]
