@@ -8,8 +8,6 @@ do_base_url= "https://api.digitalocean.com/v2"
 with open("../cloudinit/cloud-init.yml") as conf:
     do_cloud_init= conf.read()
 
-# print(do_cloud_init)
-
 # Create Server Request
 
 create_server_requests = requests.post(f"{do_base_url}/droplets",headers={
