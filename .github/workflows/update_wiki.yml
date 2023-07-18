@@ -11,8 +11,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+
       - name: Clone Repo
         uses: actions/checkout@v3
+
       - name: Clone Wiki Repo
         uses: actions/checkout@v3
         with: 
@@ -21,8 +23,10 @@ jobs:
           ssh-key: '${{ secrets.LUKA_KIU_PC_64X }}'
           persist-credentials: true
           path: wiki
+
       - name: Copy docs
         run: cp -r ./docs/* ./wiki
+
       - name: Commit files
         working-directory: ./wiki
         run: |
@@ -37,7 +41,7 @@ jobs:
           repository: 'ntatrishvili/minecraft_server.wiki'
           directory: ./wiki
           ssh: true
-          branch: ${{ github.ref }}
+          branch: master
           
 
 
