@@ -16,7 +16,7 @@ jobs:
       - name: Clone Wiki Repo
         uses: actions/checkout@v3
         with: 
-          repository: 'git@github.com:ntatrishvili/minecraft_server.wiki.git'
+          repository: 'ntatrishvili/minecraft_server.wiki'
           token: ${{ github.token }}
           ssh-key: '${{ secrets.LUKA_KIU_PC_64X }}'
           persist-credentials: true
