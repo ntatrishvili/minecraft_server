@@ -1,0 +1,31 @@
+#cloud-config
+
+groups:
+  - mc
+
+users:
+  - name: nia
+    groups: sudo, mc
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_import_id:
+      - "gh:ntatrishvili"
+  - name: luka
+    groups: sudo, mc
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_import_id:
+      - "gh:dr-mato"
+
+package_update: true
+package_upgrade: true
+packages:
+  - openjdk-18-jre
+  - git
+
+runcmd:
+  - ["git","clone","https://github.com/ntatrishvili/minecraft_server.git","/minecraft"]
+  - ["wget", "https://piston-data.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar",
+    "-O", "/minecraft/app/server.jar"]
+  - ["chown", "-R", "nia:mc", "/minecraft"]
+  - ["chmod", "-R", "g+rw", "/minecraft"]

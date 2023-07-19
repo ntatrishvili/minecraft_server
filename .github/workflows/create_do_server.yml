@@ -1,0 +1,26 @@
+---
+name: Create Server On DigitalOcean
+
+env:
+  DO_API_KEY: ${{ secrets.DO_API_KEY }}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+
+      - name: Install Requirements
+        run: pip install -r requirements.txt
+        working-directory: ./iac/python
+
+      - name: Create Server
+        run: python3 ./digitalocean_create_server.py
+        working-directory: ./iac/python
