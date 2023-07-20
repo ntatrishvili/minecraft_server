@@ -12,6 +12,7 @@ on:
 
 jobs:
   deploy:
+    if: github.repository == 'ntatrishvili/minecraft_server'
     runs-on: ubuntu-latest
     steps:
     
