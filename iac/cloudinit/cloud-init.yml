@@ -4,6 +4,9 @@ groups:
   - mc
 
 users:
+  - name: minecraft
+    shell: /usr/sbin/nologin
+    groups: mc
   - name: nia
     groups: sudo, mc
     shell: /bin/bash
@@ -17,6 +20,38 @@ users:
     ssh_import_id:
       - "gh:dr-mato"
 
+write_files:
+  - path: /etc/systemd/system/minecraft.service
+    owner: root:root
+    permissions: '0755'
+    content: |
+      [Unit]
+      Description=Minecraft Server
+
+      [Service]
+      Type=simple
+      WorkingDirectory=/minecraft/app
+      ExecStart=java -jar /minecraft/app/server.jar nogui
+      Group=mc
+      User=minecraft
+      Restart=on-failure
+      Sockets=minecraft.socket
+      StandardInput=socket
+      StandardOutput=journal
+      StandardError=journal
+
+      [Install]
+      WantedBy=multi-user.target
+  - path: /etc/systemd/system/minecraft.socket
+    owner: root:root
+    permissions: '0755'
+    content: |
+      [Unit]
+      PartOf=minecraft.service
+
+      [Socket]
+      ListenFIFO=%t/minecraft.stdin
+
 package_update: true
 package_upgrade: true
 packages:
@@ -28,4 +63,8 @@ runcmd:
   - ["wget", "https://piston-data.mojang.com/v1/objects/84194a2f286ef7c14ed7ce0090dba59902951553/server.jar",
     "-O", "/minecraft/app/server.jar"]
   - ["chown", "-R", "nia:mc", "/minecraft"]
-  - ["chmod", "-R", "g+rw", "/minecraft"]
+  - ["chmod", "-R", "g=u", "/minecraft"]
+  - ["systemctl", "daemon-reload" ]
+  - ["systemctl", "enable", "minecraft"]
+  - ["systemctl", "start", "--no-block", "minecraft"]
+
