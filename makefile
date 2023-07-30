@@ -4,15 +4,14 @@ mc_stdin = /run/minecraft.stdin
 _logs = /app/logs/latest.log
 _minecraft = minecraft
 
-all: stop restart log
-.PHONY: all
-
+.PHONY: stop
 stop: $(mc_stdin)
 	echo "stop" > $(mc_stdin)
 
-# should we also delete the world? 
+.PHONY: restart
 restart:
 	systemctl restart $(minecraft)
 
+.PHONY: log
 log:
 	cat $(_logs)
