@@ -4,7 +4,7 @@ mc_stdin = /run/minecraft.stdin
 _logs = /app/logs/latest.log
 _minecraft = minecraft
 
-all: stop restart log clean
+all: stop restart log
 .PHONY: all
 
 stop: $(mc_stdin)
@@ -16,6 +16,3 @@ restart:
 
 log:
 	cat $(_logs)
-
-clean:
-	rm $(mc_stdin) $(_logs)
