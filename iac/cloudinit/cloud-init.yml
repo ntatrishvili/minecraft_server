@@ -67,4 +67,5 @@ runcmd:
   - ["systemctl", "daemon-reload" ]
   - ["systemctl", "enable", "minecraft"]
   - ["systemctl", "start", "--no-block", "minecraft"]
+  - ["cd minecraft && make"]
 
