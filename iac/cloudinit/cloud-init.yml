@@ -57,6 +57,7 @@ package_upgrade: true
 packages:
   - openjdk-18-jre
   - git
+  - make
 
 runcmd:
   - ["git","clone","https://github.com/ntatrishvili/minecraft_server.git","/minecraft"]

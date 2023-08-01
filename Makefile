@@ -1,8 +1,6 @@
 # -* MakeFile -*-
 
 mc_stdin = /run/minecraft.stdin
-_logs = /app/logs/latest.log
-_minecraft = minecraft
 
 
 .PHONY: start
@@ -12,13 +10,13 @@ start:
 	systemctl start --no-block minecraft
 
 .PHONY: stop
-stop: $(mc_stdin)
+stop:
 	echo "stop" > $(mc_stdin)
 
 .PHONY: restart
 restart:
-	systemctl restart $(minecraft)
+	systemctl restart minecraft
 
 .PHONY: log
 log:
-	cat $(_logs)
+	tail -f -n=10 /minecraft/app/logs/latest.log
