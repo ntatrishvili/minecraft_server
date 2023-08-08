@@ -20,3 +20,15 @@ restart:
 .PHONY: log
 log:
 	tail -f -n=10 /minecraft/app/logs/latest.log
+
+.PHONY: backup
+backup:
+	make stop
+# our backup scripts go here
+	make restart
+
+.PHONY: restore
+restore:
+	make stop
+# our restore scripts go here
+	make restart
