@@ -1,0 +1,39 @@
+---
+  name: Backup Server
+  
+  on:
+    workflow_dispatch:
+    schedule:
+      - cron: '0 1 * * *'
+  
+  jobs:
+    backup:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Clone Repo
+          uses: actions/checkout@v3
+  
+        - name: Install doctl
+          uses: digitalocean/action-doctl@v2
+          with:
+            token: ${{ secrets.DO_API_KEY }}
+  
+        - name: Get Server IP
+          run: >-
+            echo "::set-output name=INSTANCE_IP::$(
+              doctl compute droplet get ${{ vars.DO_INSTANCE }} --no-header --template {{.PublicIPv4}}
+            )"
+          id: do_instance_ip
+        
+        - name: Run Backup To DO Spaces
+          uses: appleboy/ssh-action@v1.0.0
+          with:
+            host: ${{ steps.do_instance_ip.outputs.INSTANCE_IP }}
+            user: username
+            key: ${{ secrets.LUKA_KIU_PC_PRIVATE }}
+            envs: S3_ALIAS_NAME,S3_BUCKET_NAME
+            script: cd /minecraft && sudo make backup
+          env:
+            S3_ALIAS_NAME: dospaces
+            S3_BUCKET_NAME: mc-backupd
+  
