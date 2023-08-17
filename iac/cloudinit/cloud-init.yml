@@ -58,6 +58,7 @@ packages:
   - openjdk-18-jre
   - git
   - make
+  - zip
 
 runcmd:
   - ["git","clone","https://github.com/ntatrishvili/minecraft_server.git","/minecraft"]
@@ -68,4 +69,6 @@ runcmd:
   - ["systemctl", "daemon-reload" ]
   - ["systemctl", "enable", "minecraft"]
   - ["systemctl", "start", "--no-block", "minecraft"]
-
+# Install Minio Client
+  - ["wget", "https://dl.min.io/client/mc/release/linux-amd64/mc", "-O", "/usr/bin/mc"]
+  - ["chmod", "755", "/usr/bin/mc"]
