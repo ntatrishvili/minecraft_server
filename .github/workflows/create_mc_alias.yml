@@ -27,7 +27,7 @@
             uses: appleboy/ssh-action@v1.0.0
             with:
               host: ${{ steps.do_instance_ip.outputs.INSTANCE_IP }}
-              user: username
+              username: nia
               key: ${{ secrets.LUKA_KIU_PC_PRIVATE }}
               envs: S3_ALIAS_NAME,S3_ENDPOINT,S3_ACCESS_KEY,S3_SECRET_KEY
               script: cd /minecraft && sudo make mc_alias
