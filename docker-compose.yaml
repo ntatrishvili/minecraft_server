@@ -14,6 +14,8 @@ services:
       WORDPRESS_DB_NAME: exampledb
     volumes:
       - wordpress:/var/www/html
+    depends_on:
+      - db
 
   db:
     image: mysql:5.7
@@ -32,10 +34,35 @@ services:
     ports:
      - '3000:3000'
 
-  ubuntu:
-    image: ubuntu
+  minio:
+    image: quay.io/minio/minio:RELEASE.2023-03-22T06-36-24Z
+    container_name: minio
+    restart: always
+    ports:
+      - 9080:9080
+      - 9000:9000
+    command:
+      - server
+      - /data
+      - --console-address
+      - :9080
+      - --address
+      - :9000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      MINIO_ROOT_USER: ROOTNAME
+      MINIO_ROOT_PASSWORD: CHANGEME123
+    volumes:
+      - minio:/data
+
+
 
 
 volumes:
   wordpress:
   db:
+  minio:
