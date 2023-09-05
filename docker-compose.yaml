@@ -1,0 +1,68 @@
+---
+version: '3.1'
+
+services:
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+
+  grafana:
+    image: grafana/grafana:main-ubuntu
+    restart: always
+    ports:
+     - '3000:3000'
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2023-03-22T06-36-24Z
+    container_name: minio
+    restart: always
+    ports:
+      - 9080:9080
+      - 9000:9000
+    command:
+      - server
+      - /data
+      - --console-address
+      - :9080
+      - --address
+      - :9000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      MINIO_ROOT_USER: ROOTNAME
+      MINIO_ROOT_PASSWORD: CHANGEME123
+    volumes:
+      - minio:/data
+
+
+
+
+volumes:
+  wordpress:
+  db:
+  minio:
