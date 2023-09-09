@@ -1,0 +1,7 @@
+server.jar
+world/
+logs/
+libraries/
+versions/
+Dockerfile
+.gitignore
