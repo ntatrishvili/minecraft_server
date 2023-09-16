@@ -2,24 +2,28 @@
 
 mc_stdin = /run/minecraft.stdin
 
+UID := $(id -u)
+GID := $(id -g)
 
 .PHONY: start
 start:
-	systemctl daemon-reload
-	systemctl enable minecraft
-	systemctl start --no-block minecraft
+	mkdir -p ./app/world
+	docker run -d -it \
+	 --name minecraft \
+	 -v minecraft:/minecraft \
+	 -v ./app/world:/minecraft/world:rw \
+	 -p 25565:25565 \
+	 -u $(UID):$(GID) \
+	 ghcr.io/ntatrishvili/minecraft_server:main 
 
 .PHONY: stop
 stop:
-	echo "stop" > $(mc_stdin)
+	docker stop -s SIGTERM minecraft
+	docker rm -f minecraft
 
 .PHONY: restart
 restart:
-	systemctl restart minecraft
-
-.PHONY: log
-log:
-	tail -f -n 10 /minecraft/app/logs/latest.log
+	docker restart -s SIGTERM minecraft
 
 .PHONY: mc_alias
 mc_alias:
@@ -32,7 +36,7 @@ backup:
 	zip -r /tmp/world.zip ./app/world
 	mc cp /tmp/world.zip ${S3_ALIAS_NAME}/${S3_BACKUP_BUCKET}
 
-	make restart
+	make start
 
 .PHONY: restore
 restore:
@@ -46,4 +50,4 @@ restore:
 
 	unzip /tmp/world.zip -d .
 # our restore scripts go here
-	make restart
+	make start
