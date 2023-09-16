@@ -12,6 +12,8 @@ VOLUME [ "/minecraft" ]
 
 EXPOSE 25565
 
+RUN chmod -R o=u /minecraft
+
 ENTRYPOINT [ "java" ]
 
 CMD [ "-jar", "./server.jar" ]

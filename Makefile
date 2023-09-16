@@ -2,8 +2,8 @@
 
 mc_stdin = /run/minecraft.stdin
 
-UID := $(id -u)
-GID := $(id -g)
+UID := $(shell id -u)
+GID := $(shell id -g)
 
 .PHONY: start
 start:
