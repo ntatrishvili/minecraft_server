@@ -15,7 +15,7 @@ create_server_requests = requests.post(f"{do_base_url}/droplets",headers={
 },json={
   "name": "something",
   "size": "s-2vcpu-2gb",
-  "image": "ubuntu-22-04-x64",
+  "image": "docker-22-04",
   "user_data": do_cloud_init,
   "ssh_keys": [
     "55:79:b3:e9:e2:a4:c2:8d:0b:66:55:e5:5e:cd:e7:07"

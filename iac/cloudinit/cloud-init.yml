@@ -8,54 +8,27 @@ users:
     shell: /usr/sbin/nologin
     groups: mc
   - name: nia
-    groups: sudo, mc
+    groups: sudo, mc, docker
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     ssh_import_id:
       - "gh:ntatrishvili"
   - name: luka
-    groups: sudo, mc
+    groups: sudo, mc, docker
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     ssh_import_id:
       - "gh:dr-mato"
-
-write_files:
-  - path: /etc/systemd/system/minecraft.service
-    owner: root:root
-    permissions: '0755'
-    content: |
-      [Unit]
-      Description=Minecraft Server
-
-      [Service]
-      Type=simple
-      WorkingDirectory=/minecraft/app
-      ExecStart=java -jar /minecraft/app/server.jar nogui
-      Group=mc
-      User=minecraft
-      Restart=on-failure
-      Sockets=minecraft.socket
-      StandardInput=socket
-      StandardOutput=journal
-      StandardError=journal
-
-      [Install]
-      WantedBy=multi-user.target
-  - path: /etc/systemd/system/minecraft.socket
-    owner: root:root
-    permissions: '0755'
-    content: |
-      [Unit]
-      PartOf=minecraft.service
-
-      [Socket]
-      ListenFIFO=%t/minecraft.stdin
+  - name: samer
+    groups: sudo, mc, docker
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_import_id:
+      - "gh:samerbahri98"
 
 package_update: true
 package_upgrade: true
 packages:
-  - openjdk-18-jre
   - git
   - make
   - zip
@@ -66,9 +39,6 @@ runcmd:
     "-O", "/minecraft/app/server.jar"]
   - ["chown", "-R", "nia:mc", "/minecraft"]
   - ["chmod", "-R", "g=u", "/minecraft"]
-  - ["systemctl", "daemon-reload" ]
-  - ["systemctl", "enable", "minecraft"]
-  - ["systemctl", "start", "--no-block", "minecraft"]
 # Install Minio Client
   - ["wget", "https://dl.min.io/client/mc/release/linux-amd64/mc", "-O", "/usr/bin/mc"]
   - ["chmod", "755", "/usr/bin/mc"]
