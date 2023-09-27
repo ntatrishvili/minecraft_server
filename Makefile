@@ -51,3 +51,12 @@ restore:
 	unzip /tmp/world.zip -d .
 # our restore scripts go here
 	make start
+
+.PHONY: ansible
+ansible:
+	docker build -t ansible ${PWD}/iac/ansible
+	docker run --rm -it \
+		-v ${PWD}/iac/ansible:/ansible:ro \
+		-v "$(dirname "$SSH_AUTH_SOCK")":"$(dirname "$SSH_AUTH_SOCK")"\
+		-e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
+		--network host ansible
