@@ -1,0 +1,7 @@
+---
+plugin: community.docker.docker_containers
+docker_host: unix:///home/nia/.docker/desktop/docker.sock
+add_legacy_groups: true
+keyed_groups:
+  - prefix: network
+    key: 'docker_hostconfig.NetworkMode'

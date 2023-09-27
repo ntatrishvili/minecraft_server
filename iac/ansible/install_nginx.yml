@@ -1,0 +1,18 @@
+---
+- hosts: network_ansible_default
+  name: install nginx
+  vars:
+    apt_packages:
+      - nginx
+      - git
+      - curl
+  tasks:
+    - name: run apt update and upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: "safe"
+
+    - name: install nginx
+      ansible.builtin.apt:
+        name: "{{ apt_packages }}"
+        state: present

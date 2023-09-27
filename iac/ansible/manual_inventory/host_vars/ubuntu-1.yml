@@ -1,0 +1,5 @@
+---
+ansible_host: localhost
+ansible_user: root
+ansible_port: 2221
+ansible_connection: ssh
