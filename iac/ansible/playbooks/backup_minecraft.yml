@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: minecraft
   name: Backup Minecraft
   vars:
     minecraft_container_name: minecraft
