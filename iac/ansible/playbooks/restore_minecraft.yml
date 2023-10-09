@@ -1,0 +1,65 @@
+---
+- hosts: minecraft
+  name: restore Minecraft server
+  vars:
+    minecraft_container_name: minecraft
+    minecraft_world_path: /home/nia/Projects/minecraft_server/app/world
+    minecraft_s3_bucket: minecraft
+  tasks:
+    - name: Get Minecraft Docker Container
+      community.docker.docker_container_info:
+        name: "{{ minecraft_container_name }}"
+      register: minecraft_container
+
+    - name: Exit
+      ansible.builtin.fail:
+      when: not minecraft_container.exists
+
+    - name: Get S3 Bucket
+      community.aws.aws_s3_bucket_info:
+        name: "{{minecraft_s3_bucket}}"
+      register: bucket
+
+    - name: Exit
+      ansible.builtin.fail:
+      when: bucket["buckets"] | length == 0 
+
+    - name: Stop Minecraft Server
+      community.docker.docker_container:
+        name: "{{ minecraft_container_name }}"
+        state: stopped
+        kill_signal: SIGINT
+
+    - name: Create Temporary Dir
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: mc_backup
+      register: temp_dir
+
+    - name: Restore from S3
+      amazon.aws.s3_object:
+        bucket: "{{ minecraft_s3_bucket }}"
+        mode: get
+        object: world.zip
+        encrypt: false
+        dest: "{{ temp_dir.path }}/world.zip"
+        aws_config:
+          s3:
+            addressing_style: path
+
+    - name: Delete World
+      ansible.builtin.file:
+        path: "{{ minecraft_world_path }}"
+        state: absent
+      
+    - name: Unzip World
+      ansible.builtin.unarchive:
+        src: "{{ temp_dir.path }}"
+        dest: "{{ minecraft_world_path }}"
+        remote_src: yes
+
+    - name: Start Minecraft
+      community.docker.docker_container:
+        name: "{{ minecraft_container_name }}"
+        state: started  
+
