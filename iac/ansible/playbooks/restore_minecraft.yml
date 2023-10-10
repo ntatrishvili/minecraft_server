@@ -3,7 +3,8 @@
   name: restore Minecraft server
   vars:
     minecraft_container_name: minecraft
-    minecraft_world_path: /home/nia/Projects/minecraft_server/app/world
+    minecraft_path: /home/nia/Projects/minecraft_server/app
+    minecraft_world_path: "{{minecraft_path}}/world" 
     minecraft_s3_bucket: minecraft
   tasks:
     - name: Get Minecraft Docker Container
@@ -11,9 +12,9 @@
         name: "{{ minecraft_container_name }}"
       register: minecraft_container
 
-    - name: Exit
-      ansible.builtin.fail:
-      when: not minecraft_container.exists
+    # - name: Exit
+    #   ansible.builtin.fail:
+    #   when: not minecraft_container.exists
 
     - name: Get S3 Bucket
       community.aws.aws_s3_bucket_info:
@@ -29,6 +30,7 @@
         name: "{{ minecraft_container_name }}"
         state: stopped
         kill_signal: SIGINT
+      when: minecraft_container.exists
 
     - name: Create Temporary Dir
       ansible.builtin.tempfile:
@@ -51,11 +53,11 @@
       ansible.builtin.file:
         path: "{{ minecraft_world_path }}"
         state: absent
-      
+
     - name: Unzip World
       ansible.builtin.unarchive:
-        src: "{{ temp_dir.path }}"
-        dest: "{{ minecraft_world_path }}"
+        src: "{{ temp_dir.path }}/world.zip"
+        dest: "{{ minecraft_path }}"
         remote_src: yes
 
     - name: Start Minecraft
