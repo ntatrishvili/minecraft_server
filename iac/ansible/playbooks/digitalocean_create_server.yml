@@ -5,7 +5,7 @@
     - name: Get GitHub Contributors
       ansible.builtin.uri:
         url: "https://api.github.com/repos/ntatrishvili/minecraft_server/contributors"
-        headers:
+        headers: 
           Content-Type: application/json
       register: results
 
@@ -22,10 +22,9 @@
         image_id: "ubuntu-22-04-x64"
         name: "minecraft-server"
         region_id: "FRA1"
-        size_id: "s-2vcpu-2gb"
+        size_id: "s-1vcpu-1gb"
         unique_name: true
         user_data: |-
           {{
             lookup('ansible.builtin.template','../inventory/files/cloud-init.yml')
           }}
-        
