@@ -1,17 +1,30 @@
 #cloud-config
 
 groups:
-  - docker
+  - mc
 
 users:
-{% for user in gh_users %}
-  - name: "{{ user }}"
-    groups: sudo
+  - name: minecraft
+    shell: /usr/sbin/nologin
+    groups: mc
+  - name: nia
+    groups: sudo, mc, docker
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     ssh_import_id:
-      - "gh:{{ user }}"
-{% endfor %}
+      - gh:ntatrishvili
+  - name: luka
+    groups: sudo, mc, docker
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_import_id:
+      - gh:dr-mato
+  - name: samer
+    groups: sudo, mc, docker
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_import_id:
+      - gh:samerbahri98
 
 package_update: true
 package_upgrade: true

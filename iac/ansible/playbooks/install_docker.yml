@@ -1,12 +1,23 @@
-- hosts: minecraft
-  name: install docker
+- hosts: do_server
+  name: install docker and run minecraft
   become: true
   tasks: 
     - name: test
       ansible.builtin.debug:
         var: ansible_user
+        
     - name: invoke docker role
       ansible.builtin.include_role:
         name: geerlingguy.docker
       vars:
         docker_install_compose_plugin: true
+
+    - name: run a container
+      docker_container:
+        name: container_managed_node
+        image: mtabishk/ansible-container-node
+        state: started
+        restart: yes
+        ports:
+          - "{{ expose_port }}:80"
+          - "{{ ssh_port }}:22"
