@@ -1,3 +1,0 @@
-[submodule "iac/ansible/roles/geerlingguy.docker"]
-	path = iac/ansible/roles/geerlingguy.docker
-	url = https://github.com/geerlingguy/ansible-role-docker.git

@@ -2,6 +2,31 @@
 - hosts: localhost
   name: Create DO Server
   tasks:
+    - name: Collect SSH Root Keys
+      community.digitalocean.digital_ocean_sshkey_info:
+      register: do_public_keys
+
+    - name: Get GitHub Contributors
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/ntatrishvili/minecraft_server/contributors"
+        headers: 
+          Content-Type: application/json
+      register: results
+
+    - name: Set Facts
+      ansible.builtin.set_fact:
+        gh_users: |-
+          {{
+            results['json']
+            |map(attribute="login")
+          }}
+
+    - name: output
+      ansible.builtin.copy:
+        content: "{{ lookup('ansible.builtin.template','../inventory/files/cloud-init.yml', convert_data=False) }}"
+        dest: /tmp/cloud-init.yml
+        mode: "0644"
+
     - name: Create DO Server
       community.digitalocean.digital_ocean_droplet:
         image_id: "ubuntu-22-04-x64"
@@ -9,17 +34,15 @@
         region_id: "FRA1"
         size_id: "s-1vcpu-1gb"
         unique_name: true
-        user_data: "lookup('ansible.builtin.file','../inventory/cloud-init.yml')"
-        ssh_keys:
-          - 59:10:d9:a4:5d:04:d7:00:c2:7e:fb:bd:1c:18:75:ee
-          - d1:9a:f7:9d:72:7e:e5:ec:47:31:00:6f:3c:40:b7:28
+        user_data: "{{ lookup('ansible.builtin.template','../inventory/files/cloud-init.yml', convert_data=False) }}"
+        ssh_keys: "{{ do_public_keys['data'] | map(attribute='fingerprint') }}"
       register: server_info
 
-    - name: out test server_info
-      ansible.builtin.debug:
-        var: server_info 
-        
     - name: Get IP and ID
       ansible.builtin.set_fact:
         droplet_ip: "{{ server_info.data.droplet.networks.v4[0].ip_address }}"
         droplet_id: "{{ server_info.data.droplet.id }}"
+
+    - name: Print IP
+      ansible.builtin.debug:
+        var: droplet_ip
