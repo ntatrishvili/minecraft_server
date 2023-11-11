@@ -1,0 +1,17 @@
+#cloud-config
+
+groups:
+  - docker
+
+users:
+{% for user in gh_users %}
+  - name: "{{ user }}"
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_import_id:
+      - "gh:{{ user }}"
+{% endfor %}
+
+package_update: true
+package_upgrade: true
