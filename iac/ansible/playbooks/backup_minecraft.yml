@@ -1,0 +1,54 @@
+---
+- hosts: minecraft
+  name: Backup Minecraft
+  vars:
+    minecraft_container_name: minecraft
+    minecraft_world_path: /home/nia/Projects/minecraft_server/app/world
+    minecraft_s3_bucket: minecraft
+  tasks:
+    - name: Get Minecraft Docker Container
+      community.docker.docker_container_info:
+        name: "{{ minecraft_container_name }}"
+      register: results
+
+    - name: Exit
+      ansible.builtin.fail:
+      when: not results.exists
+
+    - name: Stop Minecraft Server
+      community.docker.docker_container:
+        name: "{{ minecraft_container_name }}"
+        state: stopped
+        kill_signal: SIGINT
+    
+    - name: Create Temporary Dir
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: mc_backup
+      register: temp_dir
+
+    - name: Archive Minecraft World
+      community.general.archive:
+        format: zip
+        path: "{{ minecraft_world_path }}"
+        dest: "{{ temp_dir.path }}/world.zip"
+
+    - name: Create Backup Bucket
+      amazon.aws.s3_bucket:
+        name: "{{ minecraft_s3_bucket }}"
+
+    - name: Send Backup To S3
+      amazon.aws.s3_object:
+        bucket: "{{ minecraft_s3_bucket }}"
+        mode: put
+        object: world.zip
+        encrypt: false
+        src: "{{ temp_dir.path }}/world.zip"
+        aws_config:
+          s3:
+            addressing_style: path
+
+    - name: Start Minecraft
+      community.docker.docker_container:
+        name: "{{ minecraft_container_name }}"
+        state: started      
