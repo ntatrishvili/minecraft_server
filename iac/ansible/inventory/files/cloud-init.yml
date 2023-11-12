@@ -6,9 +6,10 @@ groups:
 users:
 {% for user in gh_users %}
   - name: "{{ user }}"
-    groups: sudo
+    groups: sudo, docker
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    lock_passwd: false
     ssh_import_id:
       - "gh:{{ user }}"
 {% endfor %}

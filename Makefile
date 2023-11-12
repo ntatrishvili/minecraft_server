@@ -57,6 +57,7 @@ ansible:
 	docker build -t ansible ${PWD}/iac/ansible
 	docker run --rm -it \
 		-v ${PWD}/iac/ansible:/ansible:ro \
-		-v "$(dirname "$SSH_AUTH_SOCK")":"$(dirname "$SSH_AUTH_SOCK")"\
-		-e SSH_AUTH_SOCK="$SSH_AUTH_SOCK" \
+		-v $(shell dirname ${SSH_AUTH_SOCK}):$(shell dirname ${SSH_AUTH_SOCK}):ro \
+		-e SSH_AUTH_SOCK="${SSH_AUTH_SOCK}" \
+		--env-file ${PWD}/iac/ansible/.env \
 		--network host ansible

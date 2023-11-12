@@ -1,6 +1,9 @@
 ---
 - hosts: localhost
   name: Create DO Server
+  vars:
+    digitalocean_create_server_print_ip: true
+    digitalocean_create_server_state: active
   tasks:
     - name: Collect SSH Root Keys
       community.digitalocean.digital_ocean_sshkey_info:
@@ -9,26 +12,17 @@
     - name: Get GitHub Contributors
       ansible.builtin.uri:
         url: "https://api.github.com/repos/ntatrishvili/minecraft_server/contributors"
-        headers: 
+        headers:
           Content-Type: application/json
       register: results
 
     - name: Set Facts
       ansible.builtin.set_fact:
-        gh_users: |-
-          {{
-            results['json']
-            |map(attribute="login")
-          }}
-
-    - name: output
-      ansible.builtin.copy:
-        content: "{{ lookup('ansible.builtin.template','../inventory/files/cloud-init.yml', convert_data=False) }}"
-        dest: /tmp/cloud-init.yml
-        mode: "0644"
+        gh_users: "{{ results['json'] | map(attribute='login') }}"
 
     - name: Create DO Server
       community.digitalocean.digital_ocean_droplet:
+        state: "{{ digitalocean_create_server_state }}"
         image_id: "ubuntu-22-04-x64"
         name: "minecraft-server"
         region_id: "FRA1"
@@ -40,9 +34,11 @@
 
     - name: Get IP and ID
       ansible.builtin.set_fact:
-        droplet_ip: "{{ server_info.data.droplet.networks.v4[0].ip_address }}"
+        droplet_ip: "{{ server_info.data.droplet.networks.v4 | selectattr('type','eq','public') | map(attribute='ip_address') | first }}"
         droplet_id: "{{ server_info.data.droplet.id }}"
+      when: digitalocean_create_server_print_ip
 
     - name: Print IP
       ansible.builtin.debug:
         var: droplet_ip
+      when: digitalocean_create_server_print_ip
