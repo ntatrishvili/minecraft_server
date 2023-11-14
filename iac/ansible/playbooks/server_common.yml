@@ -1,0 +1,22 @@
+---
+- hosts: docker
+  name: Common
+  become: true
+  pre_tasks:
+    - name: Update Cache
+      ansible.builtin.apt:
+        update_cache: true
+  tasks:
+    - name: invoke docker role
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+      vars:
+        docker_install_compose: true
+
+    - name: Login To Docker
+      community.docker.docker_login:
+        registry_url: "{{ item.host }}"
+        username: "{{ item.username }}"
+        password: "{{ item.password }}"
+      loop: "{{ docker_registries }}"
+      no_log: true
