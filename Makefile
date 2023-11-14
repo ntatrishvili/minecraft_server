@@ -59,5 +59,6 @@ ansible:
 		-v ${PWD}/iac/ansible:/ansible:ro \
 		-v $(shell dirname ${SSH_AUTH_SOCK}):$(shell dirname ${SSH_AUTH_SOCK}):ro \
 		-e SSH_AUTH_SOCK="${SSH_AUTH_SOCK}" \
+		-e ANSIBLE_VAULT_PASSWORD_FILE=/ansible/.vault \
 		--env-file ${PWD}/iac/ansible/.env \
 		--network host ansible
